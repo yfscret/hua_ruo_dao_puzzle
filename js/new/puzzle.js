@@ -7,7 +7,7 @@
         size 维度(拼图维度)
         isNunber 是否拼数字
     */
-    
+
     var Puzzle = function(id, width, height, url, size, isNunber){
 		var dom = Jun.dom;
         this.id = id;
@@ -33,13 +33,13 @@
 			this.ele.style.background = "url("+this.url+")";
 			this.itemWidth = this.width / this.size;
 			this.itemHeight = this.height / this.size;
-            
+
             this.process = []; //记录拼图过程
             this.lastTime = 0;//上一次拼图时间
             this.stepCount = 0;//步数统计
             this.beginTime = 0;//开始时间
             this.timeCount = 0;//累计时间
-            
+
             if(this.itemList.length == 0){
                 this.create();
             }
@@ -53,19 +53,19 @@
 				end =(i+1 == len ? true : false);
 				item = new Puzz(i, this.itemWidth, this.itemHeight, this.size, this.ele, this.url, end, this);//new 新的item
 				item.init();
-	
+
 				if(this.isNunber == true && end == false){
 					item.setShowInt();
 				}
-				
+
 				list.push( item );
 			}
-            
+
             var spans = this.ele.getElementsByTagName('span');
-            
+
             this.stepCountEle = spans[0];
             this.timeCountEle = spans[1];
-            
+
 			if(this.size == 3){
 				this.bindWindow();//绑定键盘事件 可以用小键盘操作
 			}
@@ -91,13 +91,13 @@
             clearInterval( this.timeInter );
         },
 		regEvent:function(x, y, index){//判断移动
-            
+
 			var size = this.size;
 			var list = this.itemList;
 			var order = this.listOrder;
-			
+
 			var j = null ;
-            
+
             if(this.lastTime == 0){
                 this.lastTime = new Date().getTime();
                 this.begin();
@@ -107,9 +107,9 @@
                 index:index,
                 delay:new Date().getTime() - this.lastTime
             };
-            
+
 			this.lastTime = new Date().getTime();
-            
+
 			if(x > 0 && list[order[x-1][y]].end){//上
                 this.stepCount++;
                 index != undefined && this.process.push(step);
@@ -143,15 +143,15 @@
 				order[x][y] = order[x][y-1];
 				order[x][y-1] = j;
 			}
-			
-            
+
+
             this.updateStepCount();
 			//this.solvability();
 			if(this.isOkay()){
 				this.success();
                 this.endTime();
 			};
-			
+
 		},
 		start:function(){
 			var list = this.itemList;
@@ -167,19 +167,19 @@
 			});
 		},
 		shuffle:function(order){//洗牌
-            
+
 			if(this.itemList.length == 0){
 				this.init();
 				this.start();
 				return ;
 			}
-            
+
             this.beginTime = 0;
             this.stepCount = 0;
             this.timeCount = 0;
             this.updateStepCount();
             this.updateTimeCount();
-            
+
             if(order === undefined){//如果没有指定顺序
                 order = [];//位置序列
                 for(var i=0; i<this.size * this.size; i++){
@@ -187,20 +187,20 @@
                 };
                 order = this.sort(order);
 			}
-            
+
 			while( ! this.solvability(order.slice(0), this.size) ){//判断当前序列是否能还原
 				order = this.sort(order);
 			}
-			
+
 			this.order = order;
 			var size = this.size;
 			var listOrder = this.listOrder = [];
 			var itemList = this.itemList;
-			
+
 			for(i=0; i<size ; i++){//矩阵
 				listOrder.push(order.slice(i*size, (i+1)*size));
 			};
-            
+
 			for(i=0,len=listOrder.length; i<len; i++){
 				for(var j=0; j<listOrder[i].length; j++){
 					itemList[listOrder[i][j]].move(j, i);
@@ -215,20 +215,20 @@
 			var count = 0;
 			var m = 0;
 			var n = 0;
-			
+
 			var len = order.length;
 			size = size || 3;
 			//[0,1,2,3,4,5,7,6,8]
 			for(var i=0; i<len; i++){
 				var a = order[i];
-				
+
 				if(a == 8){
 					m = parseInt(i/size);
 					n = parseInt(i%size);
 				}
-					
+
 				for(var j=i+1; j<len; j++){
-					
+
 					if(order[j]<a){
 						count++;
 					}
@@ -256,7 +256,7 @@
                 this.itemList[i].hide();
             }
             this.stopPlay();//停止播放
-           
+
 		},
 		keyMove:function(index){
 			var lie = parseInt((index-1)/this.size);
@@ -266,7 +266,7 @@
 		bindWindow:function(){
 			var _this = this;
 			//var keyboard = {97:1,98:2,99:3,100:4,101:5,102:6,103:7,104:8,105:9};//正常键盘
-			var keyboard = {97:7,98:8,99:9,100:4,101:5,102:6,103:1,104:2,105:3};//反转键盘 789 = 123  
+			var keyboard = {97:7,98:8,99:9,100:4,101:5,102:6,103:1,104:2,105:3};//反转键盘 789 = 123
 			document.onkeyup = function(event){
 				var e = event || window.event;
 				var index = keyboard[e.keyCode];
@@ -282,4 +282,3 @@
             new PuzzlePlayVideo(this.id, this).play();
         }
 	});
-    
